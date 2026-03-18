@@ -1,5 +1,4 @@
 use std::collections::BTreeMap;
-use std::path::Path;
 use std::process::Command;
 
 use anyhow::{Context, Result, bail};
@@ -14,8 +13,12 @@ fn ensure_git_installed() -> Result<()> {
 
 pub fn ensure_git_repo() -> Result<()> {
     ensure_git_installed()?;
-    if !Path::new(".git").exists() {
-        bail!("Not a git repository (no .git directory found)");
+    let output = Command::new("git")
+        .args(["rev-parse", "--is-inside-work-tree"])
+        .output()
+        .context("Failed to check git repository status")?;
+    if !output.status.success() {
+        bail!("Not a git repository");
     }
     Ok(())
 }
