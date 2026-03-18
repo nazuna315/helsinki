@@ -1,8 +1,11 @@
 mod config;
 mod git;
 
+use std::process;
+
 use anyhow::{Result, bail};
 use clap::{Parser, Subcommand};
+use console::style;
 use dialoguer::{Select, theme::ColorfulTheme};
 
 #[derive(Parser)]
@@ -44,7 +47,14 @@ enum Commands {
     Global,
 }
 
-fn main() -> Result<()> {
+fn main() {
+    if let Err(err) = run() {
+        eprintln!("{}: {err:?}", style("Error").red().bold());
+        process::exit(1);
+    }
+}
+
+fn run() -> Result<()> {
     let cli = Cli::parse();
 
     match cli.command {
@@ -130,7 +140,10 @@ fn cmd_set(profile: Option<String>) -> Result<()> {
     }
 
     git::apply_profile(entries)?;
-    println!("Applied profile '{profile_name}' to local git config.");
+    println!(
+        "{}: Applied profile '{profile_name}' to local git config.",
+        style("Done").green().bold()
+    );
     Ok(())
 }
 
@@ -159,12 +172,18 @@ fn cmd_remove(profile: &str) -> Result<()> {
     }
 
     config::save(&profiles)?;
-    println!("Removed profile '{profile}'.");
+    println!(
+        "{}: Removed profile '{profile}'.",
+        style("Done").green().bold()
+    );
     Ok(())
 }
 
 fn cmd_global() -> Result<()> {
     git::set_global("user.useConfigOnly", "true")?;
-    println!("Set git global config: user.useConfigOnly = true");
+    println!(
+        "{}: Set git global config: user.useConfigOnly = true",
+        style("Done").green().bold()
+    );
     Ok(())
 }
