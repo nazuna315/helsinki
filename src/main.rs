@@ -3,7 +3,7 @@ mod git;
 
 use anyhow::{bail, Result};
 use clap::{Parser, Subcommand};
-use dialoguer::Select;
+use dialoguer::{Select, theme::ColorfulTheme};
 
 #[derive(Parser)]
 #[command(name = "helsinki", about = "Git profile manager for multi-account workflows")]
@@ -96,7 +96,7 @@ fn cmd_set(profile: Option<String>) -> Result<()> {
             let mut items: Vec<String> = names.iter().map(|n| n.to_string()).collect();
             items.push("Cancel".to_string());
 
-            let selection = Select::new()
+            let selection = Select::with_theme(&ColorfulTheme::default())
                 .with_prompt("Select a profile")
                 .items(&items)
                 .default(0)
