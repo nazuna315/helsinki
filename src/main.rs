@@ -93,19 +93,13 @@ fn cmd_set(profile: Option<String>) -> Result<()> {
         Some(name) => name,
         None => {
             let names: Vec<&String> = profiles.keys().collect();
-            let mut items: Vec<String> = names.iter().map(|n| n.to_string()).collect();
-            items.push("Cancel".to_string());
 
             let selection = Select::with_theme(&ColorfulTheme::default())
                 .with_prompt("Select a profile")
-                .items(&items)
+                .items(&names)
                 .default(0)
                 .interact()?;
 
-            if selection == items.len() - 1 {
-                println!("Cancelled.");
-                return Ok(());
-            }
             names[selection].clone()
         }
     };
