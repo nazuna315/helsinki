@@ -43,12 +43,17 @@ pub fn save(profiles: &BTreeMap<String, BTreeMap<String, String>>) -> Result<()>
             .with_context(|| format!("Failed to create directory {}", parent.display()))?;
     }
 
-    let mut root = Table::new();
-    for (profile_name, entries) in profiles {
-        root.insert(profile_name.clone(), toml::Value::Table(unflatten(entries)));
+    let mut content = String::new();
+    for (i, (profile_name, entries)) in profiles.iter().enumerate() {
+        if i > 0 {
+            content.push('\n');
+        }
+        content.push_str(&format!("[{profile_name}]\n"));
+        for (key, value) in entries {
+            let escaped = toml::Value::String(value.clone()).to_string();
+            content.push_str(&format!("{key} = {escaped}\n"));
+        }
     }
-
-    let content = toml::to_string_pretty(&root).context("Failed to serialize config")?;
     fs::write(&path, content).with_context(|| format!("Failed to write {}", path.display()))?;
     Ok(())
 }
@@ -82,32 +87,6 @@ pub(crate) fn flatten_table(table: &Table, prefix: &str) -> BTreeMap<String, Str
         }
     }
     result
-}
-
-/// Converts a flat map with dot-separated keys back into a nested TOML table.
-///
-/// This is the inverse of [`flatten_table`]. For example,
-/// `"user.name" => "John"` becomes `[user] name = "John"`.
-/// Used when serializing profiles back to the TOML config file.
-pub(crate) fn unflatten(entries: &BTreeMap<String, String>) -> Table {
-    let mut root = Table::new();
-
-    for (dotted_key, value) in entries {
-        let parts: Vec<&str> = dotted_key.split('.').collect();
-        let mut current = &mut root;
-
-        for part in &parts[..parts.len() - 1] {
-            current = current
-                .entry(part.to_string())
-                .or_insert_with(|| toml::Value::Table(Table::new()))
-                .as_table_mut()
-                .expect("expected table");
-        }
-
-        let last = parts.last().expect("key must not be empty");
-        current.insert(last.to_string(), toml::Value::String(value.clone()));
-    }
-    root
 }
 
 #[cfg(test)]
@@ -174,56 +153,4 @@ mod tests {
         assert_eq!(result.get("count").unwrap(), "42");
     }
 
-    #[test]
-    fn unflatten_single_key() {
-        let mut entries = BTreeMap::new();
-        entries.insert("name".to_string(), "John".to_string());
-        let table = unflatten(&entries);
-        assert_eq!(table.get("name").unwrap().as_str().unwrap(), "John");
-    }
-
-    #[test]
-    fn unflatten_dotted_keys() {
-        let mut entries = BTreeMap::new();
-        entries.insert("user.name".to_string(), "John Doe".to_string());
-        entries.insert("user.email".to_string(), "john@example.com".to_string());
-        let table = unflatten(&entries);
-
-        let user = table.get("user").unwrap().as_table().unwrap();
-        assert_eq!(user.get("name").unwrap().as_str().unwrap(), "John Doe");
-        assert_eq!(
-            user.get("email").unwrap().as_str().unwrap(),
-            "john@example.com"
-        );
-    }
-
-    #[test]
-    fn unflatten_deeply_nested() {
-        let mut entries = BTreeMap::new();
-        entries.insert("a.b.c".to_string(), "deep".to_string());
-        let table = unflatten(&entries);
-
-        let a = table.get("a").unwrap().as_table().unwrap();
-        let b = a.get("b").unwrap().as_table().unwrap();
-        assert_eq!(b.get("c").unwrap().as_str().unwrap(), "deep");
-    }
-
-    #[test]
-    fn unflatten_empty() {
-        let entries = BTreeMap::new();
-        let table = unflatten(&entries);
-        assert!(table.is_empty());
-    }
-
-    #[test]
-    fn roundtrip_flatten_unflatten() {
-        let mut entries = BTreeMap::new();
-        entries.insert("user.name".to_string(), "John Doe".to_string());
-        entries.insert("user.email".to_string(), "john@example.com".to_string());
-        entries.insert("user.signingkey".to_string(), "ABC123".to_string());
-
-        let table = unflatten(&entries);
-        let flattened = flatten_table(&table, "");
-        assert_eq!(flattened, entries);
-    }
 }
