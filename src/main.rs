@@ -11,7 +11,7 @@ use dialoguer::{Select, theme::ColorfulTheme};
 #[derive(Parser)]
 #[command(
     name = "helsinki",
-    about = "Git profile manager for multi-account workflows"
+    about = "Quickly apply pre-configured git config profiles to local repositories"
 )]
 struct Cli {
     #[command(subcommand)]
