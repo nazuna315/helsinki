@@ -1,12 +1,15 @@
 mod config;
 mod git;
 
-use anyhow::{bail, Result};
+use anyhow::{Result, bail};
 use clap::{Parser, Subcommand};
 use dialoguer::{Select, theme::ColorfulTheme};
 
 #[derive(Parser)]
-#[command(name = "helsinki", about = "Git profile manager for multi-account workflows")]
+#[command(
+    name = "helsinki",
+    about = "Git profile manager for multi-account workflows"
+)]
 struct Cli {
     #[command(subcommand)]
     command: Option<Commands>,
@@ -52,13 +55,17 @@ fn main() -> Result<()> {
             println!();
             Ok(())
         }
-        Some(Commands::Config { profile: Some(profile), key: Some(key), value }) => {
-            cmd_config(&profile, &key, value)
-        }
+        Some(Commands::Config {
+            profile: Some(profile),
+            key: Some(key),
+            value,
+        }) => cmd_config(&profile, &key, value),
         Some(Commands::Config { .. }) => unreachable!(),
         Some(Commands::Set { profile }) => cmd_set(profile),
         Some(Commands::List) => cmd_list(),
-        Some(Commands::Remove { profile: Some(profile) }) => cmd_remove(&profile),
+        Some(Commands::Remove {
+            profile: Some(profile),
+        }) => cmd_remove(&profile),
         Some(Commands::Remove { .. }) => unreachable!(),
         Some(Commands::Global) => cmd_global(),
     }
@@ -89,10 +96,14 @@ fn cmd_config(profile: &str, key: &str, value: Option<String>) -> Result<()> {
 }
 
 fn cmd_set(profile: Option<String>) -> Result<()> {
+    git::ensure_git_repo()?;
+
     let profiles = config::load()?;
 
     if profiles.is_empty() {
-        bail!("No profiles registered. Use 'helsinki config <profile> <key> <value>' to create one.");
+        bail!(
+            "No profiles registered. Use 'helsinki config <profile> <key> <value>' to create one."
+        );
     }
 
     let profile_name = match profile {

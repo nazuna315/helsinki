@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 use std::path::Path;
 use std::process::Command;
 
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result, bail};
 
 fn ensure_git_installed() -> Result<()> {
     Command::new("git")
@@ -21,7 +21,6 @@ pub fn ensure_git_repo() -> Result<()> {
 }
 
 pub fn apply_profile(entries: &BTreeMap<String, String>) -> Result<()> {
-    ensure_git_repo()?;
     for (key, value) in entries {
         let status = Command::new("git")
             .args(["config", "--local", key, value])
