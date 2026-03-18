@@ -1,7 +1,16 @@
 [package]
-name = "helsinki"
+name = "helsinki-cli"
 version = "0.1.0"
 edition = "2024"
+description = "Quickly apply pre-configured git config profiles to local repositories"
+license = "MIT"
+repository = "https://github.com/nazuna315/helsinki"
+keywords = ["git", "config", "profile", "cli"]
+categories = ["command-line-utilities", "development-tools"]
+
+[[bin]]
+name = "helsinki"
+path = "src/main.rs"
 
 [dependencies]
 clap = { version = "4", features = ["derive"] }

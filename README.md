@@ -63,6 +63,12 @@ The `XDG_CONFIG_HOME` environment variable is respected if set.
 
 ## Installation
 
+### From crates.io
+
+```sh
+cargo install helsinki-cli
+```
+
 ### From source
 
 ```sh
