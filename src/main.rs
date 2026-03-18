@@ -15,11 +15,12 @@ struct Cli {
 #[derive(Subcommand)]
 enum Commands {
     /// Set or get a profile value (key uses git config format: user.name, user.email, etc.)
+    #[command(arg_required_else_help = true)]
     Config {
         /// Profile name
-        profile: String,
+        profile: Option<String>,
         /// Git config key (e.g. user.name, user.email, user.signingkey)
-        key: String,
+        key: Option<String>,
         /// Value to set (omit to get current value)
         value: Option<String>,
     },
@@ -31,9 +32,10 @@ enum Commands {
     /// List all registered profiles
     List,
     /// Remove a profile
+    #[command(arg_required_else_help = true)]
     Remove {
         /// Profile name to remove
-        profile: String,
+        profile: Option<String>,
     },
     /// Set git global config to require local user config (user.useConfigOnly = true)
     Global,
@@ -50,10 +52,14 @@ fn main() -> Result<()> {
             println!();
             Ok(())
         }
-        Some(Commands::Config { profile, key, value }) => cmd_config(&profile, &key, value),
+        Some(Commands::Config { profile: Some(profile), key: Some(key), value }) => {
+            cmd_config(&profile, &key, value)
+        }
+        Some(Commands::Config { .. }) => unreachable!(),
         Some(Commands::Set { profile }) => cmd_set(profile),
         Some(Commands::List) => cmd_list(),
-        Some(Commands::Remove { profile }) => cmd_remove(&profile),
+        Some(Commands::Remove { profile: Some(profile) }) => cmd_remove(&profile),
+        Some(Commands::Remove { .. }) => unreachable!(),
         Some(Commands::Global) => cmd_global(),
     }
 }
