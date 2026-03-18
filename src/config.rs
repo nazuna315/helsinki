@@ -1,12 +1,18 @@
 use std::collections::BTreeMap;
-use std::fs;
 use std::path::PathBuf;
+use std::{env, fs};
 
 use anyhow::{Context, Result};
 use toml::Table;
 
 pub fn config_path() -> Result<PathBuf> {
-    let config_dir = dirs::config_dir().context("Could not determine config directory")?;
+    let config_dir = if let Ok(xdg) = env::var("XDG_CONFIG_HOME") {
+        PathBuf::from(xdg)
+    } else {
+        dirs::home_dir()
+            .context("Could not determine home directory")?
+            .join(".config")
+    };
     Ok(config_dir.join("helsinki").join("helsinki.toml"))
 }
 
