@@ -152,5 +152,4 @@ mod tests {
         let result = flatten_table(&toml, "");
         assert_eq!(result.get("count").unwrap(), "42");
     }
-
 }
