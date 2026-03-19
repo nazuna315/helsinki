@@ -4,14 +4,23 @@ mod git;
 use std::process;
 
 use anyhow::{Result, bail};
+use clap::builder::styling::{AnsiColor, Effects, Styles};
 use clap::{Parser, Subcommand};
 use console::style;
 use dialoguer::{Select, theme::ColorfulTheme};
 
+fn styles() -> Styles {
+    Styles::styled()
+        .header(AnsiColor::Green.on_default().effects(Effects::BOLD))
+        .usage(AnsiColor::Green.on_default().effects(Effects::BOLD))
+        .literal(Effects::BOLD.into())
+}
+
 #[derive(Parser)]
 #[command(
     name = "helsinki",
-    about = "Quickly apply pre-configured git config profiles to local repositories"
+    about = "Quickly apply pre-configured git config profiles to local repositories",
+    styles = styles()
 )]
 struct Cli {
     #[command(subcommand)]
