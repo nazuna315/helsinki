@@ -5,7 +5,7 @@ edition = "2024"
 description = "Quickly apply pre-configured git config profiles to local repositories"
 license = "MIT"
 repository = "https://github.com/nazuna315/helsinki"
-keywords = ["git", "config", "profile", "cli"]
+keywords = ["git", "cli"]
 categories = ["command-line-utilities", "development-tools"]
 
 [[bin]]
