@@ -20,7 +20,8 @@ helsinki config personal user.signingkey "ABC123"
 ### Apply a profile
 
 ```sh
-# Specify directly
+# Apply the "work" profile to the current repository
+# Runs git config --local for each key in the profile (e.g. user.name, user.email)
 helsinki set work
 
 # Or select interactively
@@ -46,7 +47,7 @@ helsinki global
 
 ### Config file
 
-Profiles are stored in `~/.config/helsinki/helsinki.toml`:
+Profiles are stored in `~/.config/helsinki/helsinki.toml`. You can edit this file directly instead of using `helsinki config`:
 
 ```toml
 [work]
