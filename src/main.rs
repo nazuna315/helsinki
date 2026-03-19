@@ -70,7 +70,15 @@ fn run() -> Result<()> {
             key: Some(key),
             value,
         }) => cmd_config(&profile, &key, value),
-        Some(Commands::Config { .. }) => unreachable!(),
+        Some(Commands::Config { .. }) => {
+            use clap::CommandFactory;
+            Cli::command()
+                .find_subcommand_mut("config")
+                .expect("config subcommand")
+                .print_help()?;
+            println!();
+            Ok(())
+        }
         Some(Commands::Set { profile }) => cmd_set(profile),
         Some(Commands::List) => cmd_list(),
         Some(Commands::Remove {
