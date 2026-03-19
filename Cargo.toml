@@ -1,6 +1,6 @@
 [package]
 name = "helsinki-cli"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 description = "Quickly apply pre-configured git config profiles to local repositories"
 license = "MIT"
