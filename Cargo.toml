@@ -8,6 +8,9 @@ repository = "https://github.com/nazuna315/helsinki"
 keywords = ["git", "cli"]
 categories = ["command-line-utilities", "development-tools"]
 
+[package.metadata.release]
+publish = false # To disable publication via cargo-release
+
 [[bin]]
 name = "helsinki"
 path = "src/main.rs"
