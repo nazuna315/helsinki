@@ -30,7 +30,7 @@ struct Cli {
 #[derive(Subcommand)]
 enum Commands {
     /// Set or get a profile value (key uses git config format: user.name, user.email, etc.)
-    #[command(arg_required_else_help = true)]
+    #[command(arg_required_else_help = true, styles = styles())]
     Config {
         /// Profile name
         profile: Option<String>,
@@ -81,10 +81,10 @@ fn run() -> Result<()> {
         }) => cmd_config(&profile, &key, value),
         Some(Commands::Config { .. }) => {
             use clap::CommandFactory;
-            Cli::command()
-                .find_subcommand_mut("config")
-                .expect("config subcommand")
-                .print_help()?;
+            let mut cmd = Cli::command();
+            let sub = cmd.find_subcommand_mut("config").expect("config subcommand");
+            *sub = sub.clone().bin_name("helsinki config");
+            sub.print_help()?;
             println!();
             Ok(())
         }

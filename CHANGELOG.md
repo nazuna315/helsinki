@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Apply custom color styles to `config` subcommand help when profile is given without key
+- Show correct binary name (`helsinki config`) in usage line of `config` subcommand help
+
 ## [0.1.1] - 2026-03-20
 
 ### Added
