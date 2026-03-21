@@ -82,7 +82,9 @@ fn run() -> Result<()> {
         Some(Commands::Config { .. }) => {
             use clap::CommandFactory;
             let mut cmd = Cli::command();
-            let sub = cmd.find_subcommand_mut("config").expect("config subcommand");
+            let sub = cmd
+                .find_subcommand_mut("config")
+                .expect("config subcommand");
             *sub = sub.clone().bin_name("helsinki config");
             sub.print_help()?;
             println!();
